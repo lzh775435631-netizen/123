@@ -1,0 +1,27 @@
+[
+  {
+    "name": "BBC World",
+    "category": "国际",
+    "url": "https://feeds.bbci.co.uk/news/world/rss.xml"
+  },
+  {
+    "name": "BBC Business",
+    "category": "财经",
+    "url": "https://feeds.bbci.co.uk/news/business/rss.xml"
+  },
+  {
+    "name": "BBC Technology",
+    "category": "科技",
+    "url": "https://feeds.bbci.co.uk/news/technology/rss.xml"
+  },
+  {
+    "name": "NPR World",
+    "category": "国际",
+    "url": "https://feeds.npr.org/1004/rss.xml"
+  },
+  {
+    "name": "NPR Business",
+    "category": "财经",
+    "url": "https://feeds.npr.org/1006/rss.xml"
+  }
+]

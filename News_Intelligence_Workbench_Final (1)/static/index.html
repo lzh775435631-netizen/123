@@ -1,0 +1,40 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>News Intelligence Workbench</title>
+<style>
+:root{--bg:#f5f7fa;--panel:#fff;--text:#172033;--muted:#7b8495;--line:#e6eaf0;--blue:#2864dc;--soft:#edf4ff}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}.layout{display:flex;min-height:100vh}.side{position:fixed;width:235px;inset:0 auto 0 0;background:#111827;color:#b7c0cf;padding:20px 13px}.logo{font-size:19px;font-weight:800;color:#fff;padding:6px 12px 25px}.logo b{color:#60a5fa}.cap{font-size:11px;color:#667085;padding:10px 12px}.nav button{display:flex;width:100%;border:0;background:none;color:inherit;padding:10px 12px;border-radius:8px;cursor:pointer;text-align:left}.nav button.on,.nav button:hover{background:#202938;color:#fff}.n{margin-left:auto;color:#667085}.main{margin-left:235px;width:calc(100% - 235px);padding:20px 27px}.top{display:flex;gap:9px}.search{position:relative;flex:1}.search input{width:100%;height:44px;border:1px solid var(--line);border-radius:10px;padding:0 14px 0 38px;background:#fff;outline:0}.search i{position:absolute;left:13px;top:9px;color:#98a2b3;font-size:20px}.btn{height:42px;border:1px solid var(--line);border-radius:9px;background:#fff;padding:0 13px;cursor:pointer}.primary{background:var(--blue);border-color:var(--blue);color:#fff}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;margin:18px 0}.stat{background:#fff;border:1px solid var(--line);border-radius:11px;padding:14px}.stat small{color:var(--muted)}.stat strong{display:block;font-size:25px;margin-top:3px}.row{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:15px}.panel{background:#fff;border:1px solid var(--line);border-radius:12px;padding:15px}.panel h2{font-size:16px;margin:0 0 13px}.tabs{display:flex;gap:7px;overflow:auto;margin-bottom:12px}.tab{white-space:nowrap;border:1px solid var(--line);background:#fff;padding:7px 11px;border-radius:20px;cursor:pointer}.tab.on{color:var(--blue);background:var(--soft);border-color:#bfd4fb}.card{border-top:1px solid #eef0f3;padding:14px 0}.card:first-child{border-top:0}.meta{font-size:12px;color:#929baa;display:flex;gap:8px}.tag{color:var(--blue);background:var(--soft);padding:2px 6px;border-radius:5px}.card h3{font-size:16px;line-height:1.45;margin:7px 0}.card p{margin:0;color:#606b7b;line-height:1.6}.foot{display:flex;justify-content:space-between;align-items:center;margin-top:10px;color:#929baa;font-size:12px}.act button{border:0;background:#f5f6f8;padding:6px 8px;border-radius:7px;cursor:pointer}.hot{padding:9px 0;border-top:1px solid #eef0f3}.hot:first-of-type{border-top:0}.hot b{display:inline-block;width:23px;color:#e25555}.hot a{color:var(--text);text-decoration:none;line-height:1.45}.notice{display:none;background:#ecfdf3;color:#087443;padding:9px 12px;border-radius:8px;margin-top:10px}.notice.show{display:block}.mobile{display:none}
+@media(max-width:900px){.side{display:none}.main{margin:0;width:100%;padding:12px}.row{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}.mobile{display:block}.top .btn:nth-of-type(1){display:none}}
+</style></head><body><div class="layout">
+<aside class="side"><div class="logo">NEWS<b>HUB</b> · INTEL</div><div class="cap">新闻分类</div><nav class="nav" id="nav"></nav><div class="cap">我的工作台</div><nav class="nav"><button onclick="choose('收藏')">★ 收藏 <span class="n" id="savedN">0</span></button><button onclick="choose('已读')">✓ 已读</button></nav></aside>
+<main class="main">
+<div class="mobile">移动端已自动适配</div>
+<div class="top"><div class="search"><i>⌕</i><input id="q" placeholder="搜索标题、摘要、来源、关键词…"></div><button class="btn" onclick="sync()">↻ 同步新闻</button><button class="btn primary" onclick="live()">● <span id="lt">实时更新</span></button></div>
+<div id="notice" class="notice"></div>
+<div class="stats"><div class="stat"><small>聚合新闻</small><strong id="stTotal">-</strong></div><div class="stat"><small>未读</small><strong id="stUnread">-</strong></div><div class="stat"><small>收藏</small><strong id="stSaved">-</strong></div><div class="stat"><small>新闻源</small><strong>RSS/API</strong></div></div>
+<div class="row"><section class="panel"><h2 id="heading">今日新闻</h2><div class="tabs" id="tabs"></div><div id="feed"></div></section>
+<aside class="panel"><h2>🔥 热点排行</h2><div id="hot"></div><hr style="border:0;border-top:1px solid #eef0f3;margin:15px 0"><h2>🧠 今日简报</h2><p id="digest" style="color:#667085;line-height:1.7">点击同步新闻后可刷新简报。</p></aside></div>
+</main></div>
+<script>
+const cats=['全部','财经','经济','国际','政治','科技','AI','社会','体育','文化','健康','军事','汽车','房产','商业','娱乐'];let cat='全部',q='',timer=null;
+const $=x=>document.getElementById(x);
+async function api(url,opt){let r=await fetch(url,opt);return r.json()}
+function choose(c){cat=c;render()}
+function nav(){ $('nav').innerHTML=cats.map(c=>`<button class="${c===cat?'on':''}" onclick="choose('${c}')">◈ ${c}</button>`).join('')}
+async function render(){
+ nav();$('tabs').innerHTML=cats.map(c=>`<button class="tab ${c===cat?'on':''}" onclick="choose('${c}')">${c}</button>`).join('');
+ let endpoint=`/api/news?category=${encodeURIComponent(cat)}&q=${encodeURIComponent(q)}&sort=latest`;
+ if(cat==='收藏'||cat==='已读')endpoint=`/api/news?q=${encodeURIComponent(q)}`;
+ let d=await api(endpoint);let rows=d.items;
+ if(cat==='收藏')rows=rows.filter(x=>x.saved);if(cat==='已读')rows=rows.filter(x=>x.read);
+ $('heading').textContent=cat==='全部'?'今日新闻':cat;
+ $('feed').innerHTML=rows.length?rows.map(x=>`<article class="card" style="${x.read?'opacity:.58':''}"><div class="meta"><span class="tag">${x.category}</span><span>${x.source}</span><span>·</span><span>${x.published_at}</span></div><h3>${x.title}</h3><p>${x.summary}</p><div class="foot"><span>热度 ${Math.round(x.score)} · ${JSON.parse(x.keywords||'[]').slice(0,4).join(' / ')}</span><span class="act"><button onclick="save(${x.id})">${x.saved?'★ 已收藏':'☆ 收藏'}</button> <button onclick="read(${x.id})">✓ ${x.read?'已读':'标记已读'}</button>${x.url?` <a href="${x.url}" target="_blank">原文 ↗</a>`:''}</span></div></article>`).join(''):'<div style="padding:50px;text-align:center;color:#98a2b3">暂无匹配新闻</div>';
+ let h=await api('/api/hot?limit=8');$('hot').innerHTML=h.items.map((x,i)=>`<div class="hot"><b>${i+1}</b><a href="${x.url||'#'}" target="_blank">${x.title}</a></div>`).join('');
+ let s=await api('/api/stats');$('stTotal').textContent=s.total;$('stUnread').textContent=s.unread;$('stSaved').textContent=s.saved;$('savedN').textContent=s.saved;
+ let dg=await api('/api/digest');$('digest').textContent=dg.summary;
+}
+async function save(id){await api('/api/article/'+id+'/save',{method:'POST'});render()}
+async function read(id){await api('/api/article/'+id+'/read',{method:'POST'});render()}
+async function sync(){notice('正在同步 RSS 新闻源…');let r=await api('/api/sync',{method:'POST'});notice(`✓ 同步完成：新增 ${r.added} 条新闻${r.errors?.length?'，部分来源暂时无法访问':''}`);render()}
+function notice(t){$('notice').textContent=t;$('notice').className='notice show';setTimeout(()=>$('notice').className='notice',3500)}
+function live(){if(timer){clearInterval(timer);timer=null;$('lt').textContent='实时更新'}else{timer=setInterval(sync,300000);$('lt').textContent='自动更新中'}}
+$('q').oninput=e=>{q=e.target.value;render()};render();
+</script></body></html>
