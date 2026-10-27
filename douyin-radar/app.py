@@ -28,7 +28,7 @@ async def probe():
         return {"dns_http_reachable":False,"error":type(e).__name__+": "+str(e),"base":BASE}
 
 # Endpoint path/body are configurable until live API response is verified.
-SEARCH_PATH=os.getenv("SANDBASE_SEARCH_PATH","/api/v1/douyin/search/video-search-v2")
+SEARCH_PATH=os.getenv("SANDBASE_SEARCH_PATH","/v1/api/douyin/search/video-search-v2")
 
 def extract_items(data:Any):
     if isinstance(data,list): return data
@@ -56,7 +56,7 @@ async def run(max_pages:int=8):
         for keyword in SEEDS:
             cursor=0; search_id=None; backtrace=None
             for page in range(max_pages):
-                body={"keyword":keyword,"cursor":cursor,"sort_type":"newest","publish_time":"two_days"}
+                body={"keyword":keyword,"cursor":cursor,"sort_type":"2","publish_time":"2"}
                 if search_id: body["search_id"]=search_id
                 if backtrace is not None: body["backtrace"]=backtrace
                 try:
