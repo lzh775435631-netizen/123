@@ -47,6 +47,7 @@ def getv(d,*keys):
         if isinstance(d,dict) and d.get(k) is not None:return d.get(k)
     return None
 
+@app.get("/run")
 @app.post("/run")
 async def run(max_pages:int=8):
     if max_pages<1 or max_pages>30: raise HTTPException(400,"max_pages 1..30")
