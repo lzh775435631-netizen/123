@@ -3,6 +3,7 @@ from datetime import datetime, timezone
 from typing import Any
 import httpx
 from fastapi import FastAPI, HTTPException
+import asyncio
 
 app=FastAPI(title="Douyin 48h Radar")
 BASE=os.getenv("SANDBASE_BASE_URL","https://api.sandbase.ai")
@@ -86,3 +87,19 @@ async def run(max_pages:int=8):
         key=aid or str(hash(str(it)))
         uniq[key]=row
     return {"window_hours":48,"seeds":SEEDS,"raw_in_window":len(raw),"unique_in_window":len(uniq),"errors":errors,"sample":list(uniq.values())[:20]}
+
+
+@app.on_event("startup")
+async def auto_run_on_startup():
+    if os.getenv("AUTO_RUN","1") != "1":
+        return
+    async def job():
+        await asyncio.sleep(3)
+        try:
+            result = await run(max_pages=int(os.getenv("AUTO_MAX_PAGES","8")))
+            print("RADAR_RESULT_START", flush=True)
+            print(json.dumps(result, ensure_ascii=False), flush=True)
+            print("RADAR_RESULT_END", flush=True)
+        except Exception as e:
+            print("RADAR_ERROR", repr(e), flush=True)
+    asyncio.create_task(job())
