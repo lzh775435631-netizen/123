@@ -1,0 +1,14 @@
+{
+  "checked_at": "2026-11-04T13:00:52Z",
+  "cookie_configured": false,
+  "accounts": {},
+  "new_posts": [],
+  "errors": {
+    "2945603301": "Weibo ok=-100, msg=None; valid WEIBO_COOKIE (SUB/SUBP) required",
+    "7877681517": "Weibo ok=-100, msg=None; valid WEIBO_COOKIE (SUB/SUBP) required",
+    "7786328008": "Weibo ok=-100, msg=None; valid WEIBO_COOKIE (SUB/SUBP) required",
+    "7867345199": "Weibo ok=-100, msg=None; valid WEIBO_COOKIE (SUB/SUBP) required",
+    "7364841355": "Weibo ok=-100, msg=None; valid WEIBO_COOKIE (SUB/SUBP) required",
+    "5574460906": "Weibo ok=-100, msg=None; valid WEIBO_COOKIE (SUB/SUBP) required"
+  }
+}
